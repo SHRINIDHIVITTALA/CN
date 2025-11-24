@@ -1,0 +1,79 @@
+import java.util.Scanner;
+
+public class RSA {
+
+    // Helper method for (base^exp) % mod
+    // This replaces the nested loops for encryption and decryption
+    static int modPow(int base, int exp, int mod) {
+        int res = 1;
+        for (int i = 0; i < exp; i++) {
+            res = (res * base) % mod;
+        }
+        return res;
+    }
+
+    static int gcd(int m, int n) {
+        while (n != 0) {
+            int r = m % n;
+            m = n;
+            n = r;
+        }
+        return m;
+    }
+
+    public static void main(String args[]) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter the Message tobe encrypted:");
+        String message = sc.nextLine();
+
+        System.out.println("Enter value of p and q\n");
+        int p = sc.nextInt();
+        int q = sc.nextInt();
+
+        int n = p * q;
+        int phi = (p - 1) * (q - 1);
+
+        // Find e
+        int e = 2;
+        while (gcd(e, phi) != 1) {
+            e++;
+        }
+
+        // Find d
+        int d = 2;
+        while ((e * d - 1) % phi != 0) {
+            d++;
+        }
+
+        int length = message.length();
+        int[] encrypted = new int[length];
+        int[] decrypted = new int[length];
+
+        // 1. Encrypt
+        for (int i = 0; i < length; i++) {
+            int num = message.charAt(i) - 96; // Convert char to custom number index
+            encrypted[i] = modPow(num, e, n);
+        }
+
+        // 2. Print Encrypted
+        System.out.println("\n Encrypted message\n");
+        for (int i = 0; i < length; i++) {
+            System.out.print(encrypted[i]);
+            System.out.print((char) (encrypted[i] + 96));
+        }
+
+        // 3. Decrypt
+        for (int i = 0; i < length; i++) {
+            decrypted[i] = modPow(encrypted[i], d, n);
+        }
+
+        // 4. Print Decrypted
+        System.out.println("\n Decrypted message\n ");
+        for (int i = 0; i < length; i++) {
+            System.out.print((char) (decrypted[i] + 96));
+        }
+        
+        sc.close();
+    }
+}
